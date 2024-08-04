@@ -13,6 +13,7 @@ import {
 } from "@ant-design/icons";
 import { Link } from "react-router-dom";
 import { setUser } from "../redux/userSlice";
+import { Menu as MenuComponent } from "antd";
 
 const roleRoutes = {
   "/admin": "admin",
@@ -21,9 +22,9 @@ const roleRoutes = {
 
 function ProtectedRoute({ children }) {
   const { user } = useSelector((state) => state.user);
-  const dispatch = useDispatch();
+  //const dispatch = useDispatch();
   const navigate = useNavigate();
-  const location = useLocation();
+  //const location = useLocation();
   const navItems = [
     {
       label: "Home",
