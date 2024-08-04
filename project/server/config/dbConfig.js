@@ -1,6 +1,13 @@
+//require('dotenv').config();
+
 const mongoose = require('mongoose')
 
-mongoose.connect(process.env.DATABASE_URL)
+const mongoURI = "mongodb+srv://acc02:mY9w02WfsBviaqbx@cluster0.aezttp7.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0"
+
+mongoose.connect(mongoURI, {
+  useNewUrlParser: true,
+  useUnifiedTopology: true,
+});
 
 const connection = mongoose.connection
 
@@ -10,3 +17,5 @@ connection.on('connected' , ()=>{
 connection.on('error' , ()=>{
     console.log('Connection unsuccessful')
 })
+
+module.exports = connection;
