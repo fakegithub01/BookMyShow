@@ -1,6 +1,6 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect } from "react";
 import { GetCurrentUser } from "../calls/users";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useLocation, Navigate } from "react-router-dom";
 import { message, Layout, Menu } from "antd";
 import { useDispatch, useSelector } from "react-redux";
 import { hideLoading, showLoading } from "../redux/loaderSlice";
@@ -14,15 +14,21 @@ import {
 import { Link } from "react-router-dom";
 import { setUser } from "../redux/userSlice";
 
+const roleRoutes = {
+  "/admin": "admin",
+  "/partner": "partner",
+};
+
 function ProtectedRoute({ children }) {
   const { user } = useSelector((state) => state.user);
   const dispatch = useDispatch();
   const navigate = useNavigate();
-
+  const location = useLocation();
   const navItems = [
     {
       label: "Home",
       icon: <HomeOutlined />,
+      onClick: () => navigate("/")
     },
 
     {
@@ -69,13 +75,15 @@ function ProtectedRoute({ children }) {
     try {
       dispatch(showLoading());
       const response = await GetCurrentUser();
-      console.log(response)
+      //console.log(response)
       dispatch(setUser(response.data));
       dispatch(hideLoading());
       // Hide Loader
     } catch (error) {
       dispatch(setUser(null));
       message.error(error.message);
+    } finally {
+      dispatch(hideLoading());
     }
   };
 
@@ -85,11 +93,19 @@ function ProtectedRoute({ children }) {
     } else {
       navigate("/login");
     }
-  }, []);
+  }, [navigate]);
+
+  if(user === undefined) {
+    return null;
+  }
+
+  const require_role = roleRoutes[location.pathname];
+  if(require_role && user.role !== require_role) {
+    return <Navigate to="/" />;
+  }
 
   return (
     user && (
-      <>
         <Layout>
           <Header
             className="d-flex justify-content-between"
@@ -111,7 +127,6 @@ function ProtectedRoute({ children }) {
             {children}
           </div>
         </Layout>
-      </>
     )
   );
 }
